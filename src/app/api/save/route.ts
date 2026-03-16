@@ -11,6 +11,10 @@ export async function POST(req: NextRequest) {
 
   const { opener, score, feedback } = await req.json();
 
+  await supabaseServer
+    .from("users")
+    .upsert({ id: userId }, { onConflict: "id", ignoreDuplicates: true });
+
   const { error } = await supabaseServer.from("openers").insert({
     user_id: userId,
     text: opener,

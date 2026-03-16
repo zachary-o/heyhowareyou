@@ -4,6 +4,7 @@ import { getScoreColor } from "@/utils";
 import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import { OpenerType } from "../types/index";
+import CopyToClipboard from "./CopyToClipboard";
 
 export default function SavedOpener({ opener }: { opener: OpenerType }) {
   const [loading, setLoading] = useState(false);
@@ -100,11 +101,14 @@ export default function SavedOpener({ opener }: { opener: OpenerType }) {
 
       {/* Public indicator */}
       {isPublic && (
-        <div className="px-5 pb-4 flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-xs text-green-400/60">
-            Visible in Top Openers
-          </span>
+        <div className="px-5 pb-4 flex items-center justify-between gap-1.5">
+          <div className="flex flex-row items-center gap-0.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+            <span className="text-xs text-green-400/60">
+              Visible in Top Openers
+            </span>
+          </div>
+          <CopyToClipboard text={opener.text} />
         </div>
       )}
 
