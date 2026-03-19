@@ -1,12 +1,12 @@
+import { AppSidebar } from "@/components/AppSidebar";
+import Blobs from "@/components/Blobs";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
-import Blobs from "@/components/Blobs";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 

@@ -2,9 +2,12 @@ import SavedOpener from "@/components/SavedOpener";
 import { supabaseServer } from "@/lib/supabase-server";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+
 
 export default async function SavedPage() {
   const { userId } = await auth();
+   if (!userId) redirect("/sign-in");
 
   const { data: openers } = await supabaseServer
     .from("openers")
