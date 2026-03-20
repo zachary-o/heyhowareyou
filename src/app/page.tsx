@@ -3,7 +3,6 @@
 import { Result } from "@/types";
 import { getScoreColor } from "@/utils";
 import { SignInButton, useUser } from "@clerk/nextjs";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
@@ -15,7 +14,7 @@ export default function Home() {
   const [error, setError] = useState("");
   const [charCount, setCharCount] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const { isSignedIn, user } = useUser();
+  const { isSignedIn } = useUser();
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -94,28 +93,6 @@ export default function Home() {
 
   return (
     <>
-      {/* Top nav */}
-      <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-end px-5 py-4">
-        <div className="flex items-center gap-3">
-          {isSignedIn ? (
-            <div className="flex items-center gap-2">
-              <Link
-                href="/saved"
-                className="text-xs text-white/40 hover:text-white/70 transition-colors px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5"
-              >
-                My Openers
-              </Link>
-              <span className="text-xs text-white/30">{user.firstName}</span>
-            </div>
-          ) : (
-            <SignInButton mode="modal">
-              <button className="text-xs text-white/40 hover:text-white/70 transition-colors px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5">
-                Sign in
-              </button>
-            </SignInButton>
-          )}
-        </div>
-      </div>
       {/* Header */}
       <div className="relative z-10 mb-10 text-center">
         <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-white/40 tracking-widest uppercase">

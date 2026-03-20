@@ -30,7 +30,7 @@ export default async function RootLayout({
             <AppSidebar />
             <main className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center px-4 py-12">
               <Blobs />
-              <SidebarTrigger className="z-50 absolute top-4 left-4 bg-white" />
+              <SidebarTrigger className="z-50 absolute top-4 left-4 cursor-pointer text-white/40 hover:text-white/70 hover:bg-white/5 border border-white/10 rounded-lg transition-all duration-200" />
               {children}
             </main>
           </SidebarProvider>

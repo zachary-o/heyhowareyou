@@ -3,11 +3,13 @@
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { SignInButton, useClerk, useUser } from "@clerk/nextjs";
 
 const items = [
   { title: "Rate Opener", url: "/", emoji: "⚡" },
@@ -16,6 +18,9 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const { isSignedIn, user } = useUser();
+  const { signOut } = useClerk();
+
   return (
     <Sidebar className="border-r-0">
       <div
@@ -37,7 +42,7 @@ export function AppSidebar() {
                 letterSpacing: "-0.03em",
               }}
             >
-              rate my opener
+              Hey, how are you
             </p>
             <div className="mt-1.5 flex items-center gap-1.5">
               <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse" />
@@ -79,6 +84,32 @@ export function AppSidebar() {
           </p>
         </SidebarGroup>
       </SidebarContent>
+
+      {/* Footer */}
+      <SidebarFooter className="relative z-10 px-4 py-4 border-t border-white/5">
+        {isSignedIn ? (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-xs text-white/60">
+                {user.firstName?.[0]}
+              </div>
+              <span className="text-xs text-white/40">{user.firstName}</span>
+            </div>
+            <button
+              onClick={() => signOut({ redirectUrl: "/" })}
+              className="text-xs text-white/25 hover:text-white/50 transition-colors px-2 py-1 rounded-lg hover:bg-white/5 cursor-pointer"
+            >
+              Sign out
+            </button>
+          </div>
+        ) : (
+          <SignInButton mode="modal">
+            <button className="w-full text-xs text-white/40 hover:text-white/70 transition-colors px-3 py-2 rounded-lg border border-white/10 hover:bg-white/5 cursor-pointer">
+              Sign in
+            </button>
+          </SignInButton>
+        )}
+      </SidebarFooter>
     </Sidebar>
   );
 }

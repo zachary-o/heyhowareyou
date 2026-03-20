@@ -1,5 +1,5 @@
 "use client";
-import { Copy, Check } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 
 export default function CopyToClipboard({ text }: { text: string }) {
@@ -13,7 +13,7 @@ export default function CopyToClipboard({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="text-xs text-white/30 hover:text-white/60 transition-colors px-2 py-1 rounded-lg hover:bg-white/5"
+      className="text-xs text-white/30 hover:text-white/60 transition-colors px-2 py-1 rounded-lg hover:bg-white/5 cursor-pointer"
     >
       {copied ? (
         <Check size={14} className="text-green-400" />
