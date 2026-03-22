@@ -3,6 +3,7 @@ import Blobs from "@/components/Blobs";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { cookies } from "next/headers";
@@ -20,6 +21,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const { userId } = await auth();
+   const user = userId ? await currentUser() : null;
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
   return (
@@ -27,7 +30,7 @@ export default async function RootLayout({
       <html lang="en" className={cn("font-sans", geist.variable)}>
         <body>
           <SidebarProvider defaultOpen={defaultOpen}>
-            <AppSidebar />
+            <AppSidebar userId={userId} firstName={user?.firstName ?? null} />
             <main className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center px-4 py-12">
               <Blobs />
               <SidebarTrigger className="z-50 absolute top-4 left-4 cursor-pointer text-white/40 hover:text-white/70 hover:bg-white/5 border border-white/10 rounded-lg transition-all duration-200" />

@@ -1,8 +1,13 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
+import { Environment, Paddle } from "@paddle/paddle-node-sdk";
+import { auth } from "@clerk/nextjs/server";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const paddle = new Paddle(process.env.PADDLE_API_KEY!, {
+  environment:
+    process.env.NODE_ENV === "development"
+      ? Environment.sandbox
+      : Environment.production,
+});
 
 export async function POST() {
   const { userId } = await auth();
@@ -11,21 +16,23 @@ export async function POST() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    line_items: [
+  const transaction = await paddle.transactions.create({
+    items: [
       {
-        price: process.env.STRIPE_PRICE_ID!,
+        priceId: process.env.PADDLE_PRICE_ID!,
         quantity: 1,
       },
     ],
-    mode: "payment",
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/explore?success=true`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?cancelled=true`,
-    metadata: {
-      userId,
+    customData: { userId },
+    checkout: {
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/explore?success=true`,
     },
   });
 
-  return NextResponse.json({ url: session.url });
+  return NextResponse.json({
+    url:
+      process.env.NODE_ENV === "development"
+        ? `https://sandbox-buy.paddle.com/checkout/${transaction.id}`
+        : `https://buy.paddle.com/checkout/${transaction.id}`,
+  });
 }

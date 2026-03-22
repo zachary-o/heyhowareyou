@@ -15,11 +15,18 @@ const items = [
   { title: "Rate Opener", url: "/", emoji: "⚡" },
   { title: "My Openers", url: "/saved", emoji: "🔖" },
   { title: "Top Openers", url: "/explore", emoji: "🔥" },
+  { title: "Pricing", url: "/pricing", emoji: "💎" },
 ];
 
-export function AppSidebar() {
-  const { isSignedIn, user } = useUser();
+export function AppSidebar({
+  userId,
+  firstName,
+}: {
+  userId: string | null;
+  firstName: string | null;
+}) {
   const { signOut } = useClerk();
+  const isSignedIn = !!userId;
 
   return (
     <Sidebar className="border-r-0">
@@ -91,9 +98,9 @@ export function AppSidebar() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-xs text-white/60">
-                {user.firstName?.[0]}
+                {firstName && firstName[0]}
               </div>
-              <span className="text-xs text-white/40">{user.firstName}</span>
+              <span className="text-xs text-white/40">{firstName}</span>
             </div>
             <button
               onClick={() => signOut({ redirectUrl: "/" })}

@@ -25,7 +25,7 @@ export default function PricingPage() {
         Get access to the best openers rated 8+ that actually get replies.
       </p>
 
-      <div className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-xl p-6 mb-6">
+      <div className="rounded-2xl border border-white/10 bg-white/4 backdrop-blur-xl p-6 mb-6">
         <p className="text-white/30 text-xs uppercase tracking-widest mb-2">
           One time payment
         </p>
@@ -47,7 +47,7 @@ export default function PricingPage() {
         </button>
       </div>
 
-      <p className="text-white/20 text-xs">Secure payment via Stripe</p>
+      <p className="text-white/20 text-xs">Secure payment via Paddle</p>
     </div>
   );
 }

@@ -1,28 +1,33 @@
-import { supabaseServer } from "@/lib/supabase-server";
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
+import { Paddle, EventName, Environment } from "@paddle/paddle-node-sdk";
+import { supabaseServer } from "@/lib/supabase-server";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const paddle = new Paddle(process.env.PADDLE_API_KEY!, {
+  environment:
+    process.env.NODE_ENV === "development"
+      ? Environment.sandbox
+      : Environment.production,
+});
 
 export async function POST(req: NextRequest) {
-  const body = await req.text();
-  const signature = req.headers.get("stripe-signature")!;
+  const signature = req.headers.get("paddle-signature")!;
+  const rawBody = await req.text();
 
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
+    event = await paddle.webhooks.unmarshal(
+      rawBody,
+      process.env.PADDLE_WEBHOOK_SECRET!,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!,
     );
   } catch {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-    const userId = session.metadata?.userId;
+  if (event.eventType === EventName.TransactionCompleted) {
+    const userId = (event.data as { customData?: { userId?: string } })
+      .customData?.userId;
 
     if (userId) {
       await supabaseServer

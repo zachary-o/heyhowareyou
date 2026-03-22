@@ -36,12 +36,15 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="text-white/80 font-semibold mb-2">3. Payments</h2>
+          <h2 className="text-white/80 font-semibold mb-2">
+            3. Payments & Refunds
+          </h2>
           <p>
             Access to Top Openers is available for a one-time payment of $4.99
-            USD, processed securely via Paddle. All payments are final and
-            non-refundable unless required by applicable law. You will receive
-            lifetime access to the Top Openers feature upon successful payment.
+            USD, processed securely via Paddle. We offer a full refund within 14
+            days of purchase, no questions asked. To request a refund contact us
+            at{" "}
+            <strong className="text-white/60">rateyouropener@gmail.com</strong>.
           </p>
         </section>
 
@@ -100,8 +103,9 @@ export default function TermsPage() {
         <section>
           <h2 className="text-white/80 font-semibold mb-2">9. Contact</h2>
           <p>
-            For any questions regarding these terms please contact us at{" "}
-            <strong className="text-white/60">heyhowareyou.vercel.app</strong>.
+            For any questions regarding these terms or to request a refund,
+            contact us at{" "}
+            <strong className="text-white/60">rateyouropener@gmail.com</strong>.
           </p>
         </section>
       </div>
