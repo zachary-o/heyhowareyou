@@ -109,6 +109,12 @@ export function AppSidebar() {
             </button>
           </SignInButton>
         )}
+        <a
+          href="/terms-and-conditions"
+          className="text-xs text-white/15 hover:text-white/30 transition-colors text-center"
+        >
+          Terms & Conditions
+        </a>
       </SidebarFooter>
     </Sidebar>
   );
