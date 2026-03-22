@@ -236,6 +236,7 @@ export default function Home() {
                       onClick={handleSave}
                       disabled={saving}
                       className="w-full py-2 rounded-lg text-sm font-semibold text-green-400 border border-green-500/30 hover:bg-green-500/10 transition-all disabled:opacity-50"
+                      style={{ cursor: saving ? "not-allowed" : "pointer" }}
                     >
                       {saving ? "Saving..." : "Save this opener"}
                     </button>
@@ -245,7 +246,7 @@ export default function Home() {
 
               <button
                 onClick={reset}
-                className="w-full py-3 rounded-xl text-sm font-semibold text-white/60 border border-white/10 hover:bg-white/5 transition-all duration-200"
+                className="w-full py-3 rounded-xl text-sm font-semibold text-white/60 border border-white/10 hover:bg-white/5 transition-all duration-200 cursor-pointer"
               >
                 Try another opener
               </button>

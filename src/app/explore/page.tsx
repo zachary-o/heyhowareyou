@@ -60,7 +60,7 @@ export default async function ExplorePage() {
           </p>
         )}
         {openers?.map((opener: OpenerType) => (
-          <TopOpener key={opener.id} opener={opener} />
+          <TopOpener key={opener.id} opener={opener} currentUserId={userId} />
         ))}
       </div>
     </div>
