@@ -6,6 +6,8 @@ import { useState } from "react"
 import { OpenerType } from "../types/index"
 import CopyToClipboard from "./CopyToClipboard"
 
+const EARN_BACK_THRESHOLD = 5
+
 export default function SavedOpener({
   opener,
   isBookmarked,
@@ -19,6 +21,9 @@ export default function SavedOpener({
   const { user } = useUser()
 
   const scoreColor = getScoreColor(opener.score)
+  const bookmarkCount = opener.bookmark_count ?? 0
+  const earnedCredits = Math.floor(bookmarkCount / EARN_BACK_THRESHOLD)
+  const progressToNext = bookmarkCount % EARN_BACK_THRESHOLD
 
   const handleClick = async () => {
     if (!user) return
@@ -46,7 +51,7 @@ export default function SavedOpener({
 
   return (
     <div className="relative rounded-2xl border border-white/10 bg-white/4 backdrop-blur-xl overflow-hidden transition-all duration-200 hover:border-white/20 hover:bg-white/6">
-      {/* Score accent bar at the top */}
+      {/* Score accent bar */}
       <div
         className="absolute top-0 left-0 right-0 h-0.5 opacity-60"
         style={{ background: scoreColor }}
@@ -80,6 +85,21 @@ export default function SavedOpener({
             </div>
           </div>
           <span className="text-xs text-white/30">/10</span>
+
+          {/* Bookmark count badge — only on public openers the user owns */}
+          {isPublic && !isBookmarked && bookmarkCount > 0 && (
+            <div
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs"
+              style={{
+                background: "rgba(236,72,153,0.08)",
+                border: "1px solid rgba(236,72,153,0.15)",
+                color: "rgba(249,168,212,0.7)",
+              }}
+              title={`${bookmarkCount} bookmark${bookmarkCount !== 1 ? "s" : ""}`}
+            >
+              🔖 {bookmarkCount}
+            </div>
+          )}
         </div>
 
         {/* Right side actions */}
@@ -111,13 +131,37 @@ export default function SavedOpener({
         </div>
       </div>
 
-      {/* Public indicator */}
+      {/* Public indicator + earn-back progress */}
       {isPublic && !isBookmarked && (
-        <div className="px-5 pb-4 flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-xs text-green-400/60">
-            Visible in Top Openers
-          </span>
+        <div className="px-5 pb-4 space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-xs text-green-400/60">Visible in Top Openers</span>
+            </div>
+
+            {/* Earn-back indicator */}
+            {bookmarkCount > 0 && (
+              <span className="text-xs text-white/25">
+                {earnedCredits > 0
+                  ? `🔥 +${earnedCredits} Flame${earnedCredits !== 1 ? "s" : ""} earned`
+                  : `${progressToNext}/${EARN_BACK_THRESHOLD} to earn a Flame`}
+              </span>
+            )}
+          </div>
+
+          {/* Progress bar toward next flame */}
+          {bookmarkCount > 0 && earnedCredits === 0 && (
+            <div className="w-full h-0.5 rounded-full bg-white/5 overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{
+                  width: `${(progressToNext / EARN_BACK_THRESHOLD) * 100}%`,
+                  background: "linear-gradient(90deg, #ec4899, #8b5cf6)",
+                }}
+              />
+            </div>
+          )}
         </div>
       )}
 
