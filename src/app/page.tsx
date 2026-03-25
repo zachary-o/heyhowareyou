@@ -624,6 +624,13 @@ export default function Home() {
       <p className="relative z-10 mt-10 text-white/15 text-xs text-center">
         Be honest, be interesting, be yourself
       </p>
+
+      <a
+          href="/tips"
+          className="absolute bottom-2 text-xs text-white/50 hover:text-white/80 transition-colors text-center"
+        >
+          💡 Tips & Advice
+        </a>
     </>
   );
 }

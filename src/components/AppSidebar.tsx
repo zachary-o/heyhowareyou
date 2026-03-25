@@ -16,6 +16,7 @@ const items = [
   { title: "My Openers", url: "/saved", emoji: "🔖" },
   { title: "Top Openers", url: "/explore", emoji: "🔥" },
   { title: "Pricing", url: "/pricing", emoji: "💎" },
+  { title: "Tips & Advice", url: "/tips", emoji: "💡" },
 ];
 
 export function AppSidebar({
