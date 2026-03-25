@@ -6,7 +6,7 @@ export type OpenerType = {
   feedback: string;
   is_public: boolean;
   created_at: string;
-  bookmark_count?: number
+  bookmark_count: number
 };
 
 export type Result = {
