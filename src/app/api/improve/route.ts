@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         model: GROQ_MODEL,
         messages: [
-          { role: "system", content: process.env.SYSTEM_PROMPT! },
+          { role: "system", content: process.env.IMPROVE_PROMPT! },
           {
             role: "user",
             content: `Original opener: "${opener}"\n\nFeedback: "${feedback}"`,
