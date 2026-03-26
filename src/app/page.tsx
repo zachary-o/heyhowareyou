@@ -29,6 +29,8 @@ export default function Home() {
   const [screenshots, setScreenshots] = useState<File[]>([]);
   const [screenshotPreviews, setScreenshotPreviews] = useState<string[]>([]);
 
+  console.log('screenshots', screenshots)
+  console.log('screenshotPreviews', screenshotPreviews)
   // Credits
   const [credits, setCredits] = useState<number | null>(null);
 
@@ -56,9 +58,12 @@ export default function Home() {
   };
 
   const handleScreenshots = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []).slice(0, 3);
-    setScreenshots(files);
-    setScreenshotPreviews(files.map((f) => f.name));
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    const combined = [...screenshots, ...files].slice(0, 3);
+    setScreenshots(combined);
+    setScreenshotPreviews(combined.map((f) => f.name));
+    e.target.value = "";
   };
 
   const removeScreenshot = (i: number) => {
@@ -139,7 +144,6 @@ export default function Home() {
   const handleShare = async () => {
     if (!result) return;
     setSharing(true);
-    // Save first (if not already saved), then set is_public: true
     let openerIdToShare = savedOpenerRef.current;
     if (!openerIdToShare) {
       openerIdToShare = await saveOpener();
