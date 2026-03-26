@@ -19,6 +19,11 @@ const items = [
   { title: "Tips & Advice", url: "/tips", emoji: "💡" },
 ];
 
+const footerItems = [
+  { title: "Terms & Conditions", url: "/terms-and-conditions" }, 
+  { title: "Privacy Policy", url: "/privacy" },
+]
+
 export function AppSidebar({
   userId,
   firstName,
@@ -117,12 +122,22 @@ export function AppSidebar({
             </button>
           </SignInButton>
         )}
-        <a
-          href="/terms-and-conditions"
-          className="text-xs text-white/15 hover:text-white/30 transition-colors text-center"
-        >
-          Terms & Conditions
-        </a>
+        
+        <div className="flex flex-row flex-wrap gap-y-1">
+          {footerItems.map((item, index) => (
+            <div key={item.title} className="flex items-center">
+              <a
+                href={item.url}
+                className="text-xs text-white/15 hover:text-white/30 transition-colors"
+              >
+                {item.title}
+              </a>
+              {footerItems.length - 1 !== index && (
+                <span className="text-white/15 px-1">•</span>
+              )}
+            </div>
+          ))}
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
