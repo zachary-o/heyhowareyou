@@ -29,8 +29,6 @@ export default function Home() {
   const [screenshots, setScreenshots] = useState<File[]>([]);
   const [screenshotPreviews, setScreenshotPreviews] = useState<string[]>([]);
 
-  console.log('screenshots', screenshots)
-  console.log('screenshotPreviews', screenshotPreviews)
   // Credits
   const [credits, setCredits] = useState<number | null>(null);
 

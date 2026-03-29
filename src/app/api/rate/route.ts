@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 // Groq — basic mode (free, fast, text only)
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     screenshots?: string[];
   } = body;
 
-  console.log('body', body)
+  console.log("body", body);
   if (!opener?.trim()) {
     return NextResponse.json({ error: "Opener is required." }, { status: 400 });
   }
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     if (!userId) {
       return NextResponse.json(
         { error: "Sign in to use full context." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     if (userError || !user || user.credits < FULL_CONTEXT_COST) {
       return NextResponse.json(
         { error: "Not enough Flames. Purchase more to continue." },
-        { status: 402 }
+        { status: 402 },
       );
     }
 
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     if (deductError) {
       return NextResponse.json(
         { error: "Failed to deduct credits." },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }
@@ -143,7 +143,13 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      parts.push({ text: opener });
+      parts.push({
+        text: `${opener}\n\nYou MUST respond with this exact JSON structure, no other format:\n${
+          screenshots?.length
+            ? `{"score": 7, "verdict": "Good", "feedback": "explanation here", "profileFeedback": "brief feedback about how well this opener matches the profile in the screenshots"}`
+            : `{"score": 7, "verdict": "Good", "feedback": "explanation here"}`
+        }`,
+      });
 
       const response = await fetch(
         `${GEMINI_API_URL}?key=${process.env.GEMINI_API_KEY}`,
@@ -157,7 +163,7 @@ export async function POST(req: NextRequest) {
               responseMimeType: "application/json",
             },
           }),
-        }
+        },
       );
 
       const data = await response.json();
@@ -168,6 +174,7 @@ export async function POST(req: NextRequest) {
 
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
       if (!text) throw new Error("Empty response from Gemini");
+      console.log("Gemini raw text", text);
 
       result = JSON.parse(text);
     }
@@ -191,7 +198,7 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Something went wrong." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
