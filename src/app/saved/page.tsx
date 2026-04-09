@@ -1,9 +1,18 @@
+import SavedOpener from "@/components/SavedOpener";
 import { supabaseServer } from "@/lib/supabase-server";
 import { OpenerType } from "@/types";
 import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-import SavedOpener from "@/components/SavedOpener";
+import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "My Openers",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function SavedPage() {
   const { userId } = await auth();
@@ -33,11 +42,11 @@ export default async function SavedPage() {
 
       {/* My Openers */}
       <div className="mb-10">
-        <h2
+        <h1
           className="text-white/60 text-xs uppercase tracking-widest mb-4 px-1"
         >
           My Openers
-        </h2>
+        </h1>
         {myOpeners?.length === 0 ? (
           <div className="text-center py-10">
             <p className="text-4xl mb-3">📭</p>

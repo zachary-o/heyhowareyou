@@ -12,8 +12,28 @@ import "./globals.css";
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Rate My Opener",
+  title: {
+    default: "Rate My Opener",
+    template: "%s | Rate My Opener",
+  },
   description: "AI-powered dating opener rater",
+  metadataBase: new URL("https://yourdomain.com"),
+  openGraph: {
+    title: "Rate My Opener",
+    description: "AI-powered dating opener rater",
+    url: "https://yourdomain.com",
+    siteName: "Rate My Opener",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rate My Opener",
+    description: "AI-powered dating opener rater",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default async function RootLayout({

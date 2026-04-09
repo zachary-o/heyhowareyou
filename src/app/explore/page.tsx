@@ -2,7 +2,16 @@ import TopOpener from "@/components/TopOpener";
 import { supabaseServer } from "@/lib/supabase-server";
 import { OpenerType } from "@/types";
 import { auth } from "@clerk/nextjs/server";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Top Openers",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function ExplorePage() {
   const { userId } = await auth();
@@ -54,11 +63,6 @@ export default async function ExplorePage() {
       </div>
 
       <div className="flex flex-col gap-4">
-        {openers?.length === 0 && (
-          <p className="text-center text-white/30 text-sm">
-            No public openers yet.
-          </p>
-        )}
         {openers?.map((opener: OpenerType) => (
           <TopOpener key={opener.id} opener={opener} currentUserId={userId} />
         ))}

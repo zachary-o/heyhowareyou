@@ -97,7 +97,7 @@ export default function SavedOpener({
               }}
               title={`${bookmarkCount} bookmark${bookmarkCount !== 1 ? "s" : ""}`}
             >
-              🔖 {bookmarkCount}
+              <span aria-hidden="true">🔖</span> {bookmarkCount}
             </div>
           )}
         </div>

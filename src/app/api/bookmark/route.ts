@@ -28,28 +28,23 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (opener) {
-    const newCount = (opener.bookmark_count ?? 0) + 1;
-
-    await supabaseServer
+    // Increment in DB and get the new count back
+    const { data: updated } = await supabaseServer
       .from("openers")
-      .update({ bookmark_count: newCount })
-      .eq("id", opener_id);
+      .update({ bookmark_count: (opener.bookmark_count ?? 0) + 1 })
+      .eq("id", opener_id)
+      .select("bookmark_count")
+      .single();
+
+    const newCount = updated?.bookmark_count ?? 0;
 
     // Earn-back: every EARN_BACK_THRESHOLD bookmarks → +1 credit to original author
     // Skip if user is bookmarking their own opener
     if (opener.user_id !== userId && newCount % EARN_BACK_THRESHOLD === 0) {
-      const { data: author } = await supabaseServer
-        .from("users")
-        .select("credits")
-        .eq("id", opener.user_id)
-        .single();
-
-      if (author) {
-        await supabaseServer
-          .from("users")
-          .update({ credits: author.credits + 1 })
-          .eq("id", opener.user_id);
-      }
+      await supabaseServer.rpc("increment_user_credits", {
+        user_id: opener.user_id,
+        amount: 1,
+      });
     }
   }
 

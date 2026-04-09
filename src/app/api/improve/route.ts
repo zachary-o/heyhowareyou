@@ -1,11 +1,6 @@
+import { supabaseServer } from "@/lib/supabase-server";
 import { auth } from "@clerk/nextjs/server";
-import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
@@ -31,29 +26,16 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Check + deduct credits
-  const { data: user, error: userError } = await supabase
-    .from("users")
-    .select("credits")
-    .eq("id", userId)
-    .single();
+  // Atomically check and deduct credits
+  const { data: remaining } = await supabaseServer.rpc("deduct_credits", {
+    user_id: userId,
+    amount: IMPROVE_COST,
+  });
 
-  if (userError || !user || user.credits < IMPROVE_COST) {
+  if (remaining === null) {
     return NextResponse.json(
       { error: "Not enough Flames. Purchase more to continue." },
       { status: 402 }
-    );
-  }
-
-  const { error: deductError } = await supabase
-    .from("users")
-    .update({ credits: user.credits - IMPROVE_COST })
-    .eq("id", userId);
-
-  if (deductError) {
-    return NextResponse.json(
-      { error: "Failed to deduct credits." },
-      { status: 500 }
     );
   }
 
@@ -92,18 +74,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ improved: result.improved });
   } catch (e: unknown) {
     // Refund credits on failure
-    const { data: currentUser } = await supabase
-      .from("users")
-      .select("credits")
-      .eq("id", userId)
-      .single();
-
-    if (currentUser) {
-      await supabase
-        .from("users")
-        .update({ credits: currentUser.credits + IMPROVE_COST })
-        .eq("id", userId);
-    }
+    await supabaseServer.rpc("increment_user_credits", {
+      user_id: userId,
+      amount: IMPROVE_COST,
+    });
 
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Something went wrong." },

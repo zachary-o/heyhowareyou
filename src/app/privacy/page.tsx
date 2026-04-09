@@ -1,3 +1,13 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
 export default function PrivacyPage() {
   return (
     <div className="relative z-10 w-full max-w-2xl px-4 py-16">

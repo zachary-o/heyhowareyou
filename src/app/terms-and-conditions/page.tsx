@@ -1,3 +1,14 @@
+import { Metadata } from "next";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Terms & Conditions",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
 export default function TermsPage() {
   return (
     <div className="relative z-10 w-full max-w-2xl px-4 py-16">
@@ -97,9 +108,9 @@ export default function TermsPage() {
             We collect your email address and name via Google/Facebook
             authentication (powered by Clerk). We store your saved openers and
             payment status in our database. We do not sell your personal data to
-            third parties. For more information see our <a href="/privacy" className="text-pink-400/60 hover:text-pink-400 transition-colors">
+            third parties. For more information see our <Link href="/privacy" className="text-pink-400/60 hover:text-pink-400 transition-colors">
               Privacy Policy
-            </a>.
+            </Link>.
           </p>
         </section>
 

@@ -1,11 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
-import { createClient } from "@supabase/supabase-js";
+import { supabaseServer } from "@/lib/supabase-server";
 import { NextRequest, NextResponse } from "next/server";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
 
 // Groq — basic mode (free, fast, text only)
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
@@ -46,7 +41,6 @@ export async function POST(req: NextRequest) {
     screenshots?: string[];
   } = body;
 
-  console.log("body", body);
   if (!opener?.trim()) {
     return NextResponse.json({ error: "Opener is required." }, { status: 400 });
   }
@@ -60,28 +54,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { data: user, error: userError } = await supabase
-      .from("users")
-      .select("credits")
-      .eq("id", userId)
-      .single();
+    // Atomically check and deduct credits
+    const { data: remaining } = await supabaseServer.rpc("deduct_credits", {
+      user_id: userId,
+      amount: FULL_CONTEXT_COST,
+    });
 
-    if (userError || !user || user.credits < FULL_CONTEXT_COST) {
+    if (remaining === null) {
       return NextResponse.json(
         { error: "Not enough Flames. Purchase more to continue." },
         { status: 402 },
-      );
-    }
-
-    const { error: deductError } = await supabase
-      .from("users")
-      .update({ credits: user.credits - FULL_CONTEXT_COST })
-      .eq("id", userId);
-
-    if (deductError) {
-      return NextResponse.json(
-        { error: "Failed to deduct credits." },
-        { status: 500 },
       );
     }
   }
@@ -134,7 +116,6 @@ export async function POST(req: NextRequest) {
 
       const parts: GeminiPart[] = [];
 
-      // Attach screenshots before the opener text
       if (screenshots?.length) {
         for (const b64 of screenshots.slice(0, 3)) {
           parts.push({
@@ -174,7 +155,6 @@ export async function POST(req: NextRequest) {
 
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
       if (!text) throw new Error("Empty response from Gemini");
-      console.log("Gemini raw text", text);
 
       result = JSON.parse(text);
     }
@@ -183,19 +163,12 @@ export async function POST(req: NextRequest) {
   } catch (e: unknown) {
     // Refund credits if the API call failed after deduction
     if (mode === "full" && userId) {
-      const { data: currentUser } = await supabase
-        .from("users")
-        .select("credits")
-        .eq("id", userId)
-        .single();
-
-      if (currentUser) {
-        await supabase
-          .from("users")
-          .update({ credits: currentUser.credits + FULL_CONTEXT_COST })
-          .eq("id", userId);
-      }
+      await supabaseServer.rpc("increment_user_credits", {
+        user_id: userId,
+        amount: FULL_CONTEXT_COST,
+      });
     }
+
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Something went wrong." },
       { status: 500 },

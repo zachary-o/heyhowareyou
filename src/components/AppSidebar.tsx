@@ -9,7 +9,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { SignInButton, useClerk, useUser } from "@clerk/nextjs";
+import { SignInButton, useClerk } from "@clerk/nextjs";
+import Link from "next/link";
 
 const items = [
   { title: "Rate Opener", url: "/", emoji: "⚡" },
@@ -74,15 +75,15 @@ export function AppSidebar({
                   asChild
                   className="group h-auto rounded-xl px-3 py-3 hover:bg-white/5 data-[active=true]:bg-white/8 transition-all duration-200"
                 >
-                  <a href={item.url} className="flex items-center gap-3">
-                    <span className="text-lg">{item.emoji}</span>
+                  <Link href={item.url} className="flex items-center gap-3">
+                    <span aria-hidden="true" className="text-lg">{item.emoji}</span>
                     <span
                       className="text-white/50 group-hover:text-white/80 transition-colors text-sm font-medium"
                       style={{ fontFamily: "'Georgia', serif" }}
                     >
                       {item.title}
                     </span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
@@ -126,12 +127,12 @@ export function AppSidebar({
         <div className="flex flex-row flex-wrap gap-y-1">
           {footerItems.map((item, index) => (
             <div key={item.title} className="flex items-center">
-              <a
+              <Link
                 href={item.url}
                 className="text-xs text-white/15 hover:text-white/30 transition-colors"
               >
                 {item.title}
-              </a>
+              </Link>
               {footerItems.length - 1 !== index && (
                 <span className="text-white/15 px-1">•</span>
               )}

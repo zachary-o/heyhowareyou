@@ -14,3 +14,6 @@ export type Result = {
   verdict: string;
   feedback: string;
 };
+
+export type RatingMode = "basic" | "full";
+export type DatingApp = "Tinder" | "Hinge" | "Bumble" | "OkCupid" | "Other";

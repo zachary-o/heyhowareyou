@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Tips & Advice",
+  description: "The honest truth about dating apps. How to write openers that actually get replies, and why your profile matters just as much.",
+};
+
 export default function TipsPage() {
   return (
     <div className="relative z-10 w-full max-w-2xl px-4 py-16">
@@ -94,7 +102,7 @@ export default function TipsPage() {
               </p>
             </div>
 
-            <div className="px-4 py-4 rounded-xl border border-white/10 bg-white/[0.03]">
+            <div className="px-4 py-4 rounded-xl border border-white/10 bg-white/3">
               <p className="text-white/70 font-semibold mb-1">
                 💬 Opener - that's where we come in
               </p>
@@ -128,6 +136,12 @@ export default function TipsPage() {
             your results will be.
           </p>
         </section>
+        <Link
+          href="/"
+          className="inline-block mt-6 text-xs transition-colors px-3 py-2 rounded-lg bg-linear-to-br from-pink-500 to-purple-500 text-white"
+        >
+          Rate my opener →
+        </Link>
       </div>
     </div>
   )
