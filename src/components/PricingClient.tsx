@@ -1,6 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { supabase } from "@/lib/supabase"; // adjust to your actual import path
+import { useUser } from "@clerk/nextjs";
+import { useEffect, useState } from "react";
 
 const FLAME_PACKS = [
   { id: "flames_10", label: "10 Flames", price: "$1.99", flames: 10 },
@@ -15,7 +17,17 @@ const FLAME_PACKS = [
 ]
 
 export default function PricingClient() {
+  const { user } = useUser()
   const [loadingItem, setLoadingItem] = useState<string | null>(null)
+  const [isPremium, setIsPremium] = useState(false)
+
+  useEffect(() => {
+    if (!user?.id) return
+
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((data) => setIsPremium(data.isPremium))
+  }, [user?.id])
 
   const handleCheckout = async (item: string) => {
     setLoadingItem(item)
@@ -128,12 +140,18 @@ export default function PricingClient() {
         </p>
 
         <button
-          onClick={() => handleCheckout("top_openers")}
-          disabled={loadingItem !== null}
-          className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50 cursor-pointer"
-          style={{ background: "linear-gradient(135deg, #ec4899, #8b5cf6)" }}
+          onClick={() => !isPremium && handleCheckout("top_openers")}
+          disabled={loadingItem !== null || isPremium}
+          className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50"
+          style={{
+            background: isPremium
+              ? "rgba(255,255,255,0.06)"
+              : "linear-gradient(135deg, #ec4899, #8b5cf6)",
+            border: isPremium ? "1px solid rgba(255,255,255,0.1)" : "none",
+            cursor: isPremium ? "default" : "pointer",
+          }}
         >
-          {loadingItem === "top_openers" ? "Redirecting..." : "Get Access →"}
+          {isPremium ? "✓ Already purchased" : loadingItem === "top_openers" ? "Redirecting..." : "Get Access →"}
         </button>
       </div>
 
