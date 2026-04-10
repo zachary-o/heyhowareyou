@@ -5,6 +5,7 @@ import { getScoreColor } from "@/utils";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import BuyFlamesModal from "./BuyFlamesModal";
 
 const DATING_APPS: DatingApp[] = ["Tinder", "Hinge", "Bumble", "OkCupid", "Other"];
 
@@ -29,6 +30,7 @@ export default function HomeClient() {
 
   // Credits
   const [credits, setCredits] = useState<number | null>(null);
+  const [buyModalOpen, setBuyModalOpen] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -224,7 +226,7 @@ export default function HomeClient() {
       {/* Header */}
       <div className="relative z-10 mb-10 text-center">
         <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-white/40 tracking-widest uppercase">
-          <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse shrink-0" />
           AI-powered and trained on battle-tested dating app openers that
           actually get replies
         </div>
@@ -240,14 +242,13 @@ export default function HomeClient() {
 
         {/* Credits badge */}
         {isSignedIn && credits !== null && (
-          <div className="inline-flex items-center gap-1.5 mt-4 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-white/50">
-            <span>🔥</span>
-            <span>{credits} Flames</span>
+          <div className="inline-flex items-center gap-2 mt-4 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-xs">
+            <span aria-hidden="true">🔥</span>
+            <span className="text-white/60 font-medium">{credits} Flames</span>
             <button
-              className="ml-1 text-pink-400/70 hover:text-pink-400 transition-colors cursor-pointer"
-              onClick={() => {
-                /* TODO: open purchase modal */
-              }}
+              className="font-semibold cursor-pointer transition-all duration-200 text-transparent bg-clip-text"
+              style={{ backgroundImage: "linear-gradient(135deg, #ec4899, #8b5cf6)" }}
+              onClick={() => setBuyModalOpen(true)}
             >
               + Buy
             </button>
@@ -444,16 +445,13 @@ export default function HomeClient() {
 
                 {mode === "full" && !hasEnoughCreditsForFull ? (
                   <button
-                    className="ml-auto px-5 py-2.5 rounded-xl text-sm font-semibold cursor-pointer text-white/50"
+                    className="ml-auto flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold cursor-pointer text-white transition-all duration-200"
                     style={{
-                      background: "rgba(255,255,255,0.06)",
-                      border: "1px solid rgba(255,255,255,0.08)",
+                      background: "linear-gradient(135deg, #ec4899, #8b5cf6)",
                     }}
-                    onClick={() => {
-                      /* TODO: open buy credits modal */
-                    }}
+                    onClick={() => setBuyModalOpen(true)}
                   >
-                    Not enough 🔥 — Buy Flames
+                    🔥 Buy Flames
                   </button>
                 ) : (
                   <button
@@ -552,45 +550,54 @@ export default function HomeClient() {
               )}
 
               {/* Improve button */}
-              {!improved &&
-                (isSignedIn ? (
-                  <button
-                    onClick={handleImprove}
-                    disabled={improving || !hasEnoughCreditsForImprove}
-                    className="w-full mb-2 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, rgba(139,92,246,0.18), rgba(59,130,246,0.12))",
-                      color: "rgba(196,181,253,0.9)",
-                      border: "1px solid rgba(139,92,246,0.25)",
-                    }}
-                  >
-                    {improving ? (
-                      <>
-                        <span className="w-3.5 h-3.5 border-2 border-purple-400/40 border-t-purple-400 rounded-full animate-spin" />
-                        Improving...
-                      </>
-                    ) : !hasEnoughCreditsForImprove ? (
-                      <>Not enough 🔥 to improve</>
+                {!improved &&
+                  (isSignedIn ? (
+                    !hasEnoughCreditsForImprove ? (
+                      <button
+                        onClick={() => setBuyModalOpen(true)}
+                        className="w-full mb-2 py-2.5 rounded-xl text-sm font-semibold cursor-pointer flex items-center justify-center gap-2 transition-all duration-200"
+                        style={{
+                          background: "linear-gradient(135deg, #ec4899, #8b5cf6)",
+                          color: "white",
+                        }}
+                      >
+                        🔥 Buy Flames to improve
+                      </button>
                     ) : (
-                      <>✨ Improve this opener · 2 🔥</>
-                    )}
-                  </button>
-                ) : (
-                  <SignInButton mode="modal">
-                    <button
-                      className="w-full mb-2 py-2.5 rounded-xl text-sm font-semibold cursor-pointer flex items-center justify-center gap-2"
-                      style={{
-                        background:
-                          "linear-gradient(135deg, rgba(139,92,246,0.18), rgba(59,130,246,0.12))",
-                        color: "rgba(196,181,253,0.9)",
-                        border: "1px solid rgba(139,92,246,0.25)",
-                      }}
-                    >
-                      ✨ Sign in to improve opener · 2 🔥
-                    </button>
-                  </SignInButton>
-                ))}
+                      <button
+                        onClick={handleImprove}
+                        disabled={improving}
+                        className="w-full mb-2 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        style={{
+                          background: "linear-gradient(135deg, rgba(139,92,246,0.18), rgba(59,130,246,0.12))",
+                          color: "rgba(196,181,253,0.9)",
+                          border: "1px solid rgba(139,92,246,0.25)",
+                        }}
+                      >
+                        {improving ? (
+                          <>
+                            <span className="w-3.5 h-3.5 border-2 border-purple-400/40 border-t-purple-400 rounded-full animate-spin" />
+                            Improving...
+                          </>
+                        ) : (
+                          <>✨ Improve this opener · 2 🔥</>
+                        )}
+                      </button>
+                    )
+                  ) : (
+                    <SignInButton mode="modal">
+                      <button
+                        className="w-full mb-2 py-2.5 rounded-xl text-sm font-semibold cursor-pointer flex items-center justify-center gap-2"
+                        style={{
+                          background: "linear-gradient(135deg, rgba(139,92,246,0.18), rgba(59,130,246,0.12))",
+                          color: "rgba(196,181,253,0.9)",
+                          border: "1px solid rgba(139,92,246,0.25)",
+                        }}
+                      >
+                        ✨ Sign in to improve opener · 2 🔥
+                      </button>
+                    </SignInButton>
+                  ))}
 
               {/* Save + Share row */}
               {canSave && (
@@ -702,6 +709,7 @@ export default function HomeClient() {
       >
         <span aria-hidden="true">💡</span> Tips & Advice
       </Link>
+      <BuyFlamesModal open={buyModalOpen} onOpenChange={setBuyModalOpen} />
     </>
   )
 }

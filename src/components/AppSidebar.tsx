@@ -59,7 +59,7 @@ export function AppSidebar({
               Hey, how are you
             </p>
             <div className="mt-1.5 flex items-center gap-1.5">
-              <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse" />
+              <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse shrink-0" />
               <span className="text-white/30 text-[8px] tracking-widest uppercase">
                 AI-powered and trained on battle-tested dating app openers that
                 actually get replies

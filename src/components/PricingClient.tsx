@@ -1,20 +1,8 @@
 "use client"
 
-import { supabase } from "@/lib/supabase"; // adjust to your actual import path
+import { FLAME_PACKS } from "@/consts";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-
-const FLAME_PACKS = [
-  { id: "flames_10", label: "10 Flames", price: "$1.99", flames: 10 },
-  {
-    id: "flames_30",
-    label: "30 Flames",
-    price: "$4.99",
-    flames: 30,
-    popular: true,
-  },
-  { id: "flames_100", label: "100 Flames", price: "$12.99", flames: 100 },
-]
 
 export default function PricingClient() {
   const { user } = useUser()
