@@ -606,17 +606,11 @@ export default function HomeClient() {
                     <button
                       onClick={handleSave}
                       disabled={saving || saved}
-                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer disabled:opacity-50"
+                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer disabled:opacity-50 hover:bg-white/10"
                       style={{
-                        background: saved
-                          ? "rgba(34,197,94,0.08)"
-                          : "rgba(255,255,255,0.06)",
-                        color: saved
-                          ? "rgb(134,239,172)"
-                          : "rgba(255,255,255,0.55)",
-                        border: saved
-                          ? "1px solid rgba(34,197,94,0.2)"
-                          : "1px solid rgba(255,255,255,0.1)",
+                        background: saved ? "rgba(34,197,94,0.08)" : "rgba(255,255,255,0.06)",
+                        color: saved ? "rgb(134,239,172)" : "rgba(255,255,255,0.55)",
+                        border: saved ? "1px solid rgba(34,197,94,0.2)" : "1px solid rgba(255,255,255,0.1)",
                       }}
                     >
                       {saved ? "✓ Saved" : saving ? "Saving..." : "Save opener"}
@@ -624,7 +618,7 @@ export default function HomeClient() {
                   ) : (
                     <SignInButton mode="modal">
                       <button
-                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold cursor-pointer"
+                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold cursor-pointer transition-all duration-200 hover:bg-white/10"
                         style={{
                           background: "rgba(255,255,255,0.06)",
                           color: "rgba(255,255,255,0.55)",
@@ -663,10 +657,9 @@ export default function HomeClient() {
                     ) : (
                       <SignInButton mode="modal">
                         <button
-                          className="flex-1 py-2.5 rounded-xl text-sm font-semibold cursor-pointer"
+                          className="flex-1 py-2.5 rounded-xl text-sm font-semibold cursor-pointer transition-all duration-200 hover:brightness-125"
                           style={{
-                            background:
-                              "linear-gradient(135deg, rgba(236,72,153,0.14), rgba(139,92,246,0.14))",
+                            background: "linear-gradient(135deg, rgba(236,72,153,0.14), rgba(139,92,246,0.14))",
                             color: "rgba(255,255,255,0.7)",
                             border: "1px solid rgba(236,72,153,0.18)",
                           }}
@@ -686,10 +679,11 @@ export default function HomeClient() {
 
               <button
                 onClick={reset}
-                className="w-full py-3 rounded-xl text-sm font-semibold text-white/60 border border-white/10 hover:bg-white/5 transition-all duration-200 cursor-pointer"
+                className="w-full py-3 rounded-xl text-sm font-semibold text-white/60 border border-white/10 hover:bg-white/10 hover:text-white/80 transition-all duration-200 cursor-pointer"
               >
                 Try another opener
               </button>
+
             </div>
           )}
         </div>
