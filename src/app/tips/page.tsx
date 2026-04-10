@@ -138,7 +138,7 @@ export default function TipsPage() {
         </section>
         <Link
           href="/"
-          className="inline-block mt-6 text-xs transition-colors px-3 py-2 rounded-lg bg-linear-to-br from-pink-500 to-purple-500 text-white"
+          className="inline-block mt-6 text-md font-extrabold transition-colors px-3 py-2 rounded-lg bg-linear-to-br from-pink-500 to-purple-500 text-white text-center"
         >
           Rate my opener →
         </Link>
