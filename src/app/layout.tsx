@@ -4,6 +4,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
 import { auth, currentUser } from "@clerk/nextjs/server";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { cookies } from "next/headers";
@@ -49,6 +50,7 @@ export default async function RootLayout({
     <ClerkProvider>
       <html lang="en" className={cn("font-sans", geist.variable)}>
         <body>
+          <Analytics />
           <SidebarProvider defaultOpen={defaultOpen}>
             <AppSidebar userId={userId} firstName={user?.firstName ?? null} />
             <main className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center px-4 py-12">
@@ -60,5 +62,5 @@ export default async function RootLayout({
         </body>
       </html>
     </ClerkProvider>
-  );
+  )
 }

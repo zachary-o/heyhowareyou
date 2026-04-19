@@ -1,16 +1,12 @@
-import { auth } from "@clerk/nextjs/server";
-import { supabaseServer } from "@/lib/supabase-server";
-import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server"
+import { supabaseServer } from "@/lib/supabase-server"
+import { NextRequest, NextResponse } from "next/server"
 
 // Groq — basic mode (free, fast, text only)
-const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const GROQ_MODEL = "llama-3.3-70b-versatile";
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+const GROQ_MODEL = "llama-3.3-70b-versatile"
 
-// Gemini — full context mode (free tier, supports vision)
-const GEMINI_MODEL = "gemini-2.0-flash";
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
-
-const FULL_CONTEXT_COST = 3;
+const FULL_CONTEXT_COST = 3
 
 const APP_CONTEXT: Record<string, string> = {
   Tinder:
@@ -23,11 +19,11 @@ const APP_CONTEXT: Record<string, string> = {
     "OkCupid users are generally more verbose and intellectually inclined. Thoughtful, slightly longer openers that reference shared interests or profile answers tend to perform well.",
   Other:
     "No specific app context provided. Rate based on general dating app best practices.",
-};
+}
 
 export async function POST(req: NextRequest) {
-  const { userId } = await auth();
-  const body = await req.json();
+  const { userId } = await auth()
+  const body = await req.json()
 
   const {
     opener,
@@ -35,14 +31,14 @@ export async function POST(req: NextRequest) {
     app,
     screenshots,
   }: {
-    opener: string;
-    mode: "basic" | "full";
-    app?: string;
-    screenshots?: string[];
-  } = body;
+    opener: string
+    mode: "basic" | "full"
+    app?: string
+    screenshots?: string[]
+  } = body
 
   if (!opener?.trim()) {
-    return NextResponse.json({ error: "Opener is required." }, { status: 400 });
+    return NextResponse.json({ error: "Opener is required." }, { status: 400 })
   }
 
   // Full context requires auth + credits
@@ -51,25 +47,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: "Sign in to use full context." },
         { status: 401 },
-      );
+      )
     }
 
     // Atomically check and deduct credits
     const { data: remaining } = await supabaseServer.rpc("deduct_credits", {
       user_id: userId,
       amount: FULL_CONTEXT_COST,
-    });
+    })
 
     if (remaining === null) {
       return NextResponse.json(
         { error: "Not enough Flames. Purchase more to continue." },
         { status: 402 },
-      );
+      )
     }
   }
 
   // Build shared system prompt
-  const appContext = app && APP_CONTEXT[app] ? APP_CONTEXT[app] : null;
+  const appContext = app && APP_CONTEXT[app] ? APP_CONTEXT[app] : null
 
   const systemPrompt = [
     process.env.SYSTEM_PROMPT!,
@@ -79,10 +75,10 @@ export async function POST(req: NextRequest) {
       : "",
   ]
     .filter(Boolean)
-    .join("");
+    .join("")
 
   try {
-    let result: unknown;
+    let result: unknown
 
     if (mode === "basic") {
       // ── Groq / LLaMA ──────────────────────────────────────────────
@@ -100,78 +96,80 @@ export async function POST(req: NextRequest) {
           ],
           response_format: { type: "json_object" },
         }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
       if (!response.ok || data.error) {
-        throw new Error(data.error?.message || "Groq API error");
+        throw new Error(data.error?.message || "Groq API error")
       }
 
-      result = JSON.parse(data.choices[0].message.content);
+      result = JSON.parse(data.choices[0].message.content)
     } else {
-      // ── Gemini ────────────────────────────────────────────────────
-      type GeminiPart =
-        | { text: string }
-        | { inlineData: { mimeType: string; data: string } };
+      type ContentPart =
+        | { type: "text"; text: string }
+        | { type: "image_url"; image_url: { url: string } }
 
-      const parts: GeminiPart[] = [];
+      const userContent: ContentPart[] = []
 
       if (screenshots?.length) {
         for (const b64 of screenshots.slice(0, 3)) {
-          parts.push({
-            inlineData: { mimeType: "image/jpeg", data: b64 },
-          });
+          userContent.push({
+            type: "image_url",
+            image_url: { url: `data:image/jpeg;base64,${b64}` },
+          })
         }
       }
 
-      parts.push({
-        text: `${opener}\n\nYou MUST respond with this exact JSON structure, no other format:\n${
-          screenshots?.length
-            ? `{"score": 7, "verdict": "Good", "feedback": "explanation here", "profileFeedback": "brief feedback about how well this opener matches the profile in the screenshots"}`
-            : `{"score": 7, "verdict": "Good", "feedback": "explanation here"}`
-        }`,
-      });
+      userContent.push({
+        type: "text",
+        text: `${opener}\n\nYou MUST respond with ONLY valid JSON, no other text, no markdown, no explanation. Use this exact structure:\n{"score": 7, "verdict": "Good", "feedback": "explanation here"}`,
+      })
 
       const response = await fetch(
-        `${GEMINI_API_URL}?key=${process.env.GEMINI_API_KEY}`,
+        "https://openrouter.ai/api/v1/chat/completions",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            "HTTP-Referer":
+              process.env.NODE_ENV === "development"
+                ? "http://localhost:3000"
+                : "https://heyhowareyou.vercel.app",
+          },
           body: JSON.stringify({
-            system_instruction: { parts: [{ text: systemPrompt }] },
-            contents: [{ role: "user", parts }],
-            generationConfig: {
-              responseMimeType: "application/json",
-            },
+            model: "nvidia/nemotron-nano-12b-v2-vl:free",
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userContent },
+            ],
           }),
         },
-      );
+      )
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (!response.ok || data.error) {
-        throw new Error(data.error?.message || "Gemini API error");
+        throw new Error(data.error?.message || "OpenRouter API error")
       }
 
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!text) throw new Error("Empty response from Gemini");
-
-      result = JSON.parse(text);
+      const text = data.choices[0].message.content
+      result = JSON.parse(text)
     }
 
-    return NextResponse.json(result);
+    return NextResponse.json(result)
   } catch (e: unknown) {
     // Refund credits if the API call failed after deduction
     if (mode === "full" && userId) {
       await supabaseServer.rpc("increment_user_credits", {
         user_id: userId,
         amount: FULL_CONTEXT_COST,
-      });
+      })
     }
 
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Something went wrong." },
       { status: 500 },
-    );
+    )
   }
 }
