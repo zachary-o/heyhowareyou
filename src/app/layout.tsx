@@ -1,16 +1,17 @@
-import { AppSidebar } from "@/components/AppSidebar";
-import Blobs from "@/components/Blobs";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
-import { ClerkProvider } from "@clerk/nextjs";
-import { auth, currentUser } from "@clerk/nextjs/server";
-import { Analytics } from "@vercel/analytics/next";
-import type { Metadata } from "next";
-import { Geist } from "next/font/google";
-import { cookies } from "next/headers";
-import "./globals.css";
+import { AppSidebar } from "@/components/AppSidebar"
+import Blobs from "@/components/Blobs"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { cn } from "@/lib/utils"
+import { ClerkProvider } from "@clerk/nextjs"
+import { auth, currentUser } from "@clerk/nextjs/server"
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import type { Metadata } from "next"
+import { Geist } from "next/font/google"
+import { cookies } from "next/headers"
+import "./globals.css"
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
 
 export const metadata: Metadata = {
   title: {
@@ -35,22 +36,23 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-};
+}
 
 export default async function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const { userId } = await auth();
-   const user = userId ? await currentUser() : null;
-  const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+  const { userId } = await auth()
+  const user = userId ? await currentUser() : null
+  const cookieStore = await cookies()
+  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true"
   return (
     <ClerkProvider>
       <html lang="en" className={cn("font-sans", geist.variable)}>
         <body>
           <Analytics />
+          <SpeedInsights />
           <SidebarProvider defaultOpen={defaultOpen}>
             <AppSidebar userId={userId} firstName={user?.firstName ?? null} />
             <main className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center px-4 py-12">
