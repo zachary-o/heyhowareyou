@@ -19,11 +19,11 @@ export const metadata: Metadata = {
     template: "%s | Rate My Opener",
   },
   description: "AI-powered dating opener rater",
-  metadataBase: new URL("https://yourdomain.com"),
+  metadataBase: new URL("https://ratemyopener.com"),
   openGraph: {
     title: "Rate My Opener",
     description: "AI-powered dating opener rater",
-    url: "https://yourdomain.com",
+    url: "https://ratemyopener.com",
     siteName: "Rate My Opener",
     type: "website",
   },
