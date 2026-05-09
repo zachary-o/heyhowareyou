@@ -138,7 +138,7 @@ export async function POST(req: NextRequest) {
                 : "https://heyhowareyou.vercel.app",
           },
           body: JSON.stringify({
-            model: "nvidia/nemotron-nano-12b-v2-vl:free",
+            model: process.env.OPENROUTER_MODEL,
             messages: [
               { role: "system", content: systemPrompt },
               { role: "user", content: userContent },
